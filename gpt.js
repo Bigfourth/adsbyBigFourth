@@ -75,7 +75,6 @@ function BFAdxInterstitial(_adUnit) {
   });
 }
 
-//_insertPosition = 0: beforeend, _insertPosition = 1: afterbegin, _insertPosition = 2: beforebegin, _insertPosition = 3: afterend
 function BFAdxAutoAds(_adUnit, _start, _end, _adSize, _mapping = [], _elements, _insertPosition=2, _set_min=0, _minScreen=1, _position_start=0, _position_end=0) {
   var elements = document.querySelectorAll(_elements);
   if(elements.length == 0) return;
@@ -281,16 +280,12 @@ function BFAdxInPage(_adUnit, _element, _marginTop = -1) {
     }
   });
 }
-
-//_insertPosition = 0: beforeend, position = 1: afterbegin, position = 2: beforebegin, position = 3: afterend
 function BFAdxMultipleSize(_adUnit, _element, _insertPosition=0, _marginTop=0) {
   if (window.innerWidth >= 768) return;
 
   MultipleSizeAdd(_adUnit, _element, _insertPosition);
   MultipleSizeScroll(_marginTop);
 }
-
-//_insertPosition = 0: beforeend, _insertPosition = 1: afterbegin, _insertPosition = 2: beforebegin, _insertPosition = 3: afterend
 function BFAdxMultipleSizes(_adUnit, _start, _end, _elements, _insertPosition=2, _marginTop=0, _minScreen = 1, _position_start=0, _position_end=0) {
   if (window.innerWidth >= 768) return;
 
@@ -342,8 +337,6 @@ function BFAdxMultipleSizes(_adUnit, _start, _end, _elements, _insertPosition=2,
 
   MultipleSizeScroll(_marginTop);
 }
-
-//_insertPosition = 0: beforeend, position = 1: afterbegin, position = 2: beforebegin, position = 3: afterend
 function MultipleSizeAdd(_adUnit, _element, _insertPosition=0) {
   var element = document.body.querySelector(_element);
   if(element == null) return;
@@ -513,10 +506,7 @@ function BFAdxRewarded(_adUnit) {
   }); 
 }
 
-//===========================================================================
-//ADSENSE
-//===========================================================================
-function NetlinkAdsense(_adClient, _adSlot, _adSize=[], _responsive=0, _element, _insertPosition=0) {
+function BFAdsense(_adClient, _adSlot, _adSize=[], _responsive=0, _element, _insertPosition=0) {
   var element = document.body.querySelector(_element);
   if(element == null) return;
 
@@ -557,7 +547,7 @@ function NetlinkAdsense(_adClient, _adSlot, _adSize=[], _responsive=0, _element,
   (adsbygoogle = window.adsbygoogle || []).push({});
 }
 
-function NetlinkAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
+function BFAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
   if (window.innerWidth >= 768) return;
 
   var ad_width = 300;
@@ -603,7 +593,7 @@ function NetlinkAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
   });
 }
 
-function BigFourthAdsenseFirstView(_adClient, _adSlot, _adSize = [300, 600]) {
+function BFAdsenseFirstView(_adClient, _adSlot, _adSize = [300, 600]) {
   if (window.innerWidth >= 768) return;
 
   checkAdsenseJSExists(_adClient);
