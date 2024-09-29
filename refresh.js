@@ -40,7 +40,6 @@ function loadAdUnit(adunit, sizes, format) {
 </div>`;
     } else if (format === 'Inter') {
         code_head = `
-<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 <script>
     window.googletag = window.googletag || {cmd:[]};
     var interstitialSlot, staticSlot;
@@ -61,7 +60,6 @@ function loadAdUnit(adunit, sizes, format) {
 </script>`;
     } else if (format === 'Banner') {
         code_head = `
-<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 <script>
     window.googletag = window.googletag || {cmd: []};
     googletag.cmd.push(function() {
