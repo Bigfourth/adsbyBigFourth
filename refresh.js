@@ -1,4 +1,5 @@
 function loadAdUnit(adunit, sizes, format) {
+	document.getElementById('ad-code').innerHTML = '';	
     var timestamp = Math.round(new Date().getTime());
 
     var code_head = '';
