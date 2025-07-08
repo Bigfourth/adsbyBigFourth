@@ -1,6 +1,6 @@
 **BigFourth All Functions**
 
-**BFAdx(\_adUnit, \_adSize, \_mapping, \_element, \_insertPosition, \_set\_min);**
+**XadAdx(\_adUnit, \_adSize, \_mapping, \_element, \_insertPosition, \_set\_min);**
 
 Use in cases where you want to place a banner.
 
@@ -52,11 +52,11 @@ var mapping1 = \[
 
 Demo:
 
-BFAdx('/123456/ads/bf\_banner', \[\[320,100\], \[320,50\]\], \[\], 'div-id-123');
+XadAdx('/123456/ads/bf\_banner', \[\[320,100\], \[320,50\]\], \[\], 'div-id-123');
 
-BFAdx('/123456/ads/bf\_banner', \[\[320,100\], \[320,50\]\], \[\], 'div-id-123', 1, 1);
+XadAdx('/123456/ads/bf\_banner', \[\[320,100\], \[320,50\]\], \[\], 'div-id-123', 1, 1);
 
-**BFAdxInterstitial(\_adUnit);**
+**XadAdxInterstitial(\_adUnit);**
 
 Use when you want to implement interstitial ads.
 
@@ -68,9 +68,9 @@ Example: '/123456/ads/bf\_interstitials'
 
 Demo:
 
-BFAdxInterstitial('/123456/ads/bf\_interstitials');
+XadAdxInterstitial('/123456/ads/bf\_interstitials');
 
-**BFAdxSticky(\_adUnit, \_adPosition);**
+**XadAdxSticky(\_adUnit, \_adPosition);**
 
 Use when you want to implement sticky code.
 
@@ -88,11 +88,11 @@ Example: '/123456/ads/bf\_sticky'
 
 Demo:
 
-BFAdxSticky('/123456/ads/bf\_sticky'); // Place ad at the bottom
+XadAdxSticky('/123456/ads/bf\_sticky'); // Place ad at the bottom
 
-BFAdxSticky('/123456/ads/bf\_sticky', 1); // Place ad at the top
+XadAdxSticky('/123456/ads/bf\_sticky', 1); // Place ad at the top
 
-**BFAdxInPage(\_adUnit, \_element, \_marginTop);**
+**XadAdxInPage(\_adUnit, \_element, \_marginTop);**
 
 Only applies to mobile.
 
@@ -116,13 +116,13 @@ Example: '/123456/ads/bf\_inpage'
 
 Demo:
 
-BFAdxInPage('/123456/ads/bf\_inpage', 'div-id-123'); // Ads center on the screen when scrolled
+XadAdxInPage('/123456/ads/bf\_inpage', 'div-id-123'); // Ads center on the screen when scrolled
 
-BFAdxInPage('/123456/ads/bf\_inpage', 'div-id-123', 0); // Ads flush with the top of the screen when scrolled
+XadAdxInPage('/123456/ads/bf\_inpage', 'div-id-123', 0); // Ads flush with the top of the screen when scrolled
 
-BFAdxInPage('/123456/ads/bf\_inpage', 'div-id-123', 50); // Ads display 50px from the top of the screen when scrolled
+XadAdxInPage('/123456/ads/bf\_inpage', 'div-id-123', 50); // Ads display 50px from the top of the screen when scrolled
 
-**BFAdxInImage(\_adUnit, \_adSize, \_mapping, \_element, \_image, \_marginBottom);**
+**XadAdxInImage(\_adUnit, \_adSize, \_mapping, \_element, \_image, \_marginBottom);**
 
 Use when you want to place ads in images.
 
@@ -172,11 +172,11 @@ Example:
 
 Demo:
 
-BFAdxInImage('/123456/ads/bf\_inimage', \[300,50\], \[\], 'div-id-123', 1); // Ads display on the first image
+XadAdxInImage('/123456/ads/bf\_inimage', \[300,50\], \[\], 'div-id-123', 1); // Ads display on the first image
 
-BFAdxInImage('/123456/ads/bf\_inimage', \[\[300,50\], \[300,100\]\], \[\], 'div-id-123', 5); // Ads display on the fifth image with sizes 300x50 or 300x100
+XadAdxInImage('/123456/ads/bf\_inimage', \[\[300,50\], \[300,100\]\], \[\], 'div-id-123', 5); // Ads display on the fifth image with sizes 300x50 or 300x100
 
-**BFAdxMultipleSize(\_adUnit, \_element, \_insertPosition, \_marginTop);**
+**XadAdxMultipleSize(\_adUnit, \_element, \_insertPosition, \_marginTop);**
 
 Only applies to mobile.
 
@@ -208,9 +208,9 @@ Example: '/123456/ads/bf\_multiplesize'
 
 Demo:
 
-BFAdxMultipleSize('/123456/ads/bf\_multiplesize', 'div-id-123');
+XadAdxMultipleSize('/123456/ads/bf\_multiplesize', 'div-id-123');
 
-**BFAdxFirstView(\_adUnit);**
+**XadAdxFirstView(\_adUnit);**
 
 Use when you want to place FirstView ads - PTO.
 
@@ -222,7 +222,7 @@ Example: '/123456/ads/bf\_firstview'
 
 Demo:
 
-BFAdxFirstView('/123456/ads/bf\_firstview');
+XadAdxFirstView('/123456/ads/bf\_firstview');
 
 **Implementation Process**
 
@@ -230,7 +230,7 @@ Load Script: Add the following script tag to the HTML file before the closing ta
 
 Add Ads: Add ad codes where necessary.
 
-</p><p class="slate-paragraph"> BFAdx('/123456/ads/bf_banner', [[300,50], [300,100]], [], 'div-id-123');</p><p class="slate-paragraph">
+</p><p class="slate-paragraph"> XadAdx('/123456/ads/bf_banner', [[300,50], [300,100]], [], 'div-id-123');</p><p class="slate-paragraph">
 
 Responsive Support: Ensure to use responsive display mapping to optimize ad display on different devices.
 
