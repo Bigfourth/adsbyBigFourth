@@ -47,11 +47,11 @@ function XadAdx(_adUnit, _adSize, _mapping = [], _element, _insertPosition=0, _s
     style_min = "min-width: "+min_width+"px; min-height: "+min_height+"px;";
   }
 
-  var html = <div class="xad-banner-ad">
-      <center>
-        <div id='${gpt_id}' style='${style_min}'></div>
-      </center>
-    </div>;
+  var html = `<div class="xad-banner-ad">
+    <center>
+      <div id="${gpt_id}" style="${style_min}"></div>
+    </center>
+  </div>`;
 
   if(_insertPosition == 1) element.insertAdjacentHTML("afterbegin", html);
   else if(_insertPosition == 2) element.insertAdjacentHTML("beforebegin", html);
