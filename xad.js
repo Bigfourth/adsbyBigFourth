@@ -173,7 +173,7 @@ function XadAdxInImage(_adUnit, _adSize, _mapping = [], _element, _image = 1, _m
 
   var xad_inImage = document.createElement("div");
   xad_inImage.className = "xad-inimage-ad";
-  xad_inImage.style.cssText = position:relative;;
+  xad_inImage.style.cssText = "position:relative";
 
   var inImage_Ad = document.createElement("div");
   inImage_Ad.style.cssText = position:absolute;bottom:${_marginBottom}px;z-index:10;width:100%;;
