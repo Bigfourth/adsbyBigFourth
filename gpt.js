@@ -1,6 +1,3 @@
-
-//ADX
-
 //_insertPosition = 0: beforeend, _insertPosition = 1: afterbegin, _insertPosition = 2: beforebegin, _insertPosition = 3: afterend
 function XadAdx(_adUnit, _adSize, _mapping = [], _element, _insertPosition=0, _set_min=0) {
   var element = document.body.querySelector(_element);
