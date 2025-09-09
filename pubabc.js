@@ -669,7 +669,7 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
   var gpt_id = randomID();
   var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: 100%; height: 100px; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: flex; justify-content: center; align-items: center; bottom: ${_bottom}px;">
         <button id="close-catfish" style="position: absolute; top: 0px; right: 0px; background: #D6DCD9; border: none; color: #BBC4BF; font-size: 18px; cursor: pointer; width: 20px; height: 20px;">×</button>
-        <div id="div-gpt-ad" style="min-width: ${_adSize[0]}px; min-height: ${_adSize[1]}px;"></div>
+        <div id="${gpt_id}" style="min-width: ${_adSize[0]}px; min-height: ${_adSize[1]}px;"></div>
     </div>`  ;
   document.body.insertAdjacentHTML("beforeend", html);
   
