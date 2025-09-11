@@ -618,7 +618,7 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
   if (!Array.isArray(_pageView)) _pageView = [0];
   if (_pageView.length > 0 && !_pageView.includes(0) && !_pageView.includes(pageViewCount)) return;
   var gpt_id = randomID();
-  var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: ${_adSize[0]}px; height: ${_adSize[1]}px; left: 0; right: 0; margin: 0 auto; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: flex;">
+  var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: ${_adSize[0]}px; height: ${_adSize[1]}px; left: 0; right: 0; margin: 0 auto; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: none;">
         <button id="close-catfish" style="position: absolute; top: 0px; right: 0px; background: #D6DCD9; border: none; color: #BBC4BF; font-size: 18px; cursor: pointer; width: 20px; height: 20px;">×</button>
         <div id="${gpt_id}" style="min-width: ${_adSize[0]}px; min-height: ${_adSize[1]}px;"></div>
     </div>`;
