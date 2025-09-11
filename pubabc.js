@@ -603,13 +603,9 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
 function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = [0], _bottom = 0) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
-
-  // Tự động chọn kích thước quảng cáo
   if (!_adSize) {
     _adSize = window.innerWidth < 768 ? [320, 100] : [728, 90];
   }
-
-  // Quản lý pageViewCount
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
   const now = new Date();
   if (pageViewCount == 0) {
@@ -619,25 +615,18 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
     localStorage.setItem('expiry', now.getTime());
   }
   localStorage.setItem('pageViewCount', ++pageViewCount);
-
-  // Kiểm tra điều kiện hiển thị theo lượt xem
   if (!Array.isArray(_pageView)) _pageView = [0];
   if (_pageView.length > 0 && !_pageView.includes(0) && !_pageView.includes(pageViewCount)) return;
-
-  // Tạo HTML quảng cáo
   var gpt_id = randomID();
   var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: ${_adSize[0]}px; height: ${_adSize[1]}px; left: 0; right: 0; margin: 0 auto; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: none;">
         <button id="close-catfish" style="position: absolute; top: 0px; right: 0px; background: #D6DCD9; border: none; color: #BBC4BF; font-size: 18px; cursor: pointer; width: 20px; height: 20px;">×</button>
         <div id="${gpt_id}" style="min-width: ${_adSize[0]}px; min-height: ${_adSize[1]}px;"></div>
     </div>`;
   document.body.insertAdjacentHTML("beforeend", html);
-
-  // CSS để ẩn quảng cáo
   var style = document.createElement('style');
   style.innerHTML = `.catfish-hidden { display: none; }`;
   document.head.appendChild(style);
-
-  // Khởi tạo Google Ad Manager
+  
   window.googletag = window.googletag || { cmd: [] };
   let isAdLoaded = false;
 
@@ -646,17 +635,13 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
 
-    // Kiểm tra trạng thái tải quảng cáo
     googletag.pubads().addEventListener('slotRenderEnded', function (event) {
       if (event.slot === slot && !event.isEmpty) {
-        isAdLoaded = true; // Quảng cáo đã tải thành công
+        isAdLoaded = true; 
       }
     });
-
     googletag.display(gpt_id);
   });
-
-  // Xử lý sự kiện cuộn trang
   var triggerPosition = window.innerHeight * 1.5;
   var isVisible = false;
   var catfishAd = document.getElementById('catfish-ad');
@@ -664,15 +649,12 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
   window.addEventListener("scroll", function () {
     if (isAdLoaded && window.scrollY > triggerPosition && !isVisible) {
       catfishAd.style.display = 'flex';
-      catfishAd.style.bottom = `${_bottom}px`; // Hiển thị quảng cáo ở vị trí bottom
       isVisible = true;
     } else if (window.scrollY <= triggerPosition && isVisible) {
       catfishAd.style.display = 'none';
       isVisible = false;
     }
   });
-
-  // Sự kiện đóng quảng cáo
   document.getElementById('close-catfish').addEventListener("click", function () {
     catfishAd.style.display = "none";
     isVisible = false;
