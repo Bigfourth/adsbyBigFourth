@@ -684,51 +684,7 @@ function XadAdxAutofill(_adUnit, _adSize = [300, 600], _heading) {
       element.insertAdjacentElement(position, slotDiv);
 	  
       let adSlot;
-		function XadAdxAutofill(_adUnit, _adSize = [300, 600], _heading) {
-  checkGPTExists();
-  
-  const tagName = _heading.toLowerCase();
-
-  if (!['h1', 'h2', 'h3', 'h4', 'img'].includes(tagName)) {
-    console.error(`Invalid : ${_heading}. Only h1, h2, h3, h4 or img are supported.`);
-    return;
-  }
-  const elements = document.querySelectorAll(tagName);
-  elements.forEach((element, index) => {
-    const slotId = `post-slot-${index + 1}`;
-
-    if (!document.getElementById(slotId)) {
-      const slotDiv = document.createElement('div');
-      slotDiv.id = slotId;
-
-      slotDiv.style.width = `${_adSize[0]}px`;
-      slotDiv.style.height = `${_adSize[1]}px`;
-
-      const position = tagName.startsWith('h') ? 'beforebegin' : 'afterend';
-      element.insertAdjacentElement(position, slotDiv);
-	  
-      let adSlot;
 	  window.googletag = window.googletag || { cmd: [] };
-      googletag.cmd.push(() => {
-        adSlot = googletag.defineSlot(_adUnit, _adSize, slotId);
-        if (adSlot) {
-          adSlot.addService(googletag.pubads());
-          googletag.pubads().addEventListener('slotRenderEnded', (event) => {
-            if (event.slot === adSlot && event.isEmpty) {
-              console.log(`No ads returned for the slot ${slotId}.`);
-              window[`xad_done_${slotId}`] = true;
-            }
-          });
-          googletag.enableServices();
-          googletag.display(slotId);
-        } else {
-          console.log(`Unable to create ad slots for ${slotId}.`);
-          window[`xad_done_${slotId}`] = true;
-        }
-      });
-    }
-  });
-}
       googletag.cmd.push(() => {
         adSlot = googletag.defineSlot(_adUnit, _adSize, slotId);
         if (adSlot) {
