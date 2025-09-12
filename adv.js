@@ -695,6 +695,9 @@ function XadAdxAutofill(_adUnit, _adSize = [300, 600], _heading) {
               window[`xad_done_${slotId}`] = true;
             }
           });
+		  googletag.setConfig({
+          	singleRequest: true,
+          });
           googletag.enableServices();
           googletag.display(slotId);
         } else {
