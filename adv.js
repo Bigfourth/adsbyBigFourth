@@ -2,32 +2,24 @@
 function XadAdx(_adUnit, _adSize, _mapping = [], _element, _insertPosition=0, _set_min=0) {
   var element = document.body.querySelector(_element);
   if(element == null) return;
-
   checkGPTExists();
-
   var gpt_id = randomID();
-
   window.googletag = window.googletag || {cmd: []};
   googletag.cmd.push(function() {
     var adSlot = googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
-
     if(_mapping.length) {
       var mapping = googletag.sizeMapping();
-
       _mapping.forEach(({ breakpoint, size }) => {
           var sizeArray = Array.isArray(size) ? size : [size];
           mapping.addSize(breakpoint, sizeArray);
       });
       
       var finalMapping = mapping.build();
-
       adSlot.defineSizeMapping(finalMapping);
     }
-
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   var style_min = "";
   if(_set_min != 0) {
     var min_width = 0;
@@ -43,23 +35,19 @@ function XadAdx(_adUnit, _adSize, _mapping = [], _element, _insertPosition=0, _s
     }
     style_min = "min-width: "+min_width+"px; min-height: "+min_height+"px;";
   }
-
   var html = `<div class="xad-banner-ad">
     <center>
       <div id="${gpt_id}" style="${style_min}"></div>
     </center>
   </div>`;
-
   if(_insertPosition == 1) element.insertAdjacentHTML("afterbegin", html);
   else if(_insertPosition == 2) element.insertAdjacentHTML("beforebegin", html);
   else if(_insertPosition == 3) element.insertAdjacentHTML("afterend", html);
   else element.insertAdjacentHTML("beforeend", html);
-
   googletag.cmd.push(() => {
     googletag.display(gpt_id);
   });
 }
-
 function XadAdxInterstitial(_adUnit) {
   checkGPTExists();
   window.googletag = window.googletag || {cmd: []};
@@ -69,37 +57,29 @@ function XadAdxInterstitial(_adUnit) {
     if (interstitialSlot) {
       interstitialSlot.addService(googletag.pubads());
     }
-
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
     googletag.display(interstitialSlot);
   });
 }
-
 //_insertPosition = 0: beforeend, _insertPosition = 1: afterbegin, _insertPosition = 2: beforebegin, _insertPosition = 3: afterend
 function XadAdxAutoAds(_adUnit, _start, _end, _adSize, _mapping = [], _elements, _insertPosition=2, _set_min=0, _minScreen=1, _position_start=0, _position_end=0) {
   var elements = document.querySelectorAll(_elements);
   if(elements.length == 0) return;
-
   var lastSpaceIndex = _elements.lastIndexOf(' ');
   var _element_str = lastSpaceIndex === -1 ? _elements : _elements.slice(0, lastSpaceIndex).trim() + ' > ' + _elements.slice(lastSpaceIndex + 1).trim();
-
   var min_ad = 0;
   var position = 1;
   for (var i = 0; i < elements.length; i++) {
     if(_start > _end) break;
-
     var _element = _element_str+':nth-of-type('+(i+1)+')';
-
     if(_insertPosition == 0 || _insertPosition == 3) {
       if(i == 0 || elements[i].offsetTop + elements[i].clientHeight - min_ad - (screen.height * _minScreen) >= 0) {
         if(_position_start <= position++)  {
           var adUnit = _adUnit + (_start++);
           XadAdx(adUnit, _adSize, _mapping, _element, _insertPosition, _set_min);
-
           if(_position_end != 0 && _position_end < position) break;
         }
-
         if(i < elements.length - 1)
           min_ad = elements[i+1].offsetTop;
       }
@@ -108,15 +88,12 @@ function XadAdxAutoAds(_adUnit, _start, _end, _adSize, _mapping = [], _elements,
         if(_position_start <= position++)  {
           var adUnit = _adUnit + (_start++);
           XadAdx(adUnit, _adSize, _mapping, _element, _insertPosition, _set_min);
-
           if(_position_end != 0 && _position_end < position) break;
         }
         
         min_ad = elements[i].offsetTop;
-
         if(i < elements.length - 1) continue;
       }
-
       if(i == elements.length - 1 && elements[i].offsetTop + elements[i].clientHeight - min_ad - (screen.height * _minScreen) >= 0) {
         var adUnit = _adUnit + (_start++);
         XadAdx(adUnit, _adSize, _mapping, _element, _insertPosition == 1 ? 0 : 3, _set_min);
@@ -124,10 +101,8 @@ function XadAdxAutoAds(_adUnit, _start, _end, _adSize, _mapping = [], _elements,
     }
   }
 }
-
 function XadAdxSticky(_adUnit, _adPosition=0) {
   checkGPTExists();
-
   window.googletag = window.googletag || { cmd: [] };
   var anchorSlot;
   googletag.cmd.push(() => {
@@ -140,65 +115,47 @@ function XadAdxSticky(_adUnit, _adPosition=0) {
     googletag.display(anchorSlot);
   });
 }
-
 function XadAdxInImage(_adUnit, _adSize, _mapping = [], _element, _image = 1, _marginBottom=0) {
   var images = document.body.querySelectorAll(_element);
   var image = images[_image - 1];
   if(image == undefined) return;
-
   checkGPTExists();
-
   var gpt_id = randomID();
-
   window.googletag = window.googletag || { cmd: [] };
   googletag.cmd.push(function () {
     var adSlot = googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
-
     if(_mapping.length) {
       var mapping = googletag.sizeMapping();
-
       _mapping.forEach(({ breakpoint, size }) => {
           var sizeArray = Array.isArray(size) ? size : [size];
           mapping.addSize(breakpoint, sizeArray);
       });
       
       var finalMapping = mapping.build();
-
       adSlot.defineSizeMapping(finalMapping);
     }
-
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   var xad_inImage = document.createElement("div");
   xad_inImage.className = "xad-inimage-ad";
   xad_inImage.style.cssText = "position:relative";
-
   var inImage_Ad = document.createElement("div");
   inImage_Ad.style.cssText = "position:absolute;bottom:${_marginBottom}px;z-index:10;width:100%;";
-
   var divAdsCenter = document.createElement("center");
-
   var divAds = document.createElement("div");
   divAds.id = gpt_id;
-
   var inImage_Close = document.createElement("span");
   inImage_Close.innerHTML = "×";
   inImage_Close.style.cssText = "position:absolute;display:none;z-index:1;width:25px !important;height:25px !important;right:2px !important;top:-27px !important;cursor:pointer;font-size:20px;text-align:center;background:white;padding:2px;border-radius:20px;line-height:1;";
-
   divAdsCenter.appendChild(divAds);
   inImage_Ad.appendChild(divAdsCenter);
   inImage_Ad.appendChild(inImage_Close);
-
   xad_inImage.appendChild(inImage_Ad);
-
   image.insertAdjacentElement("afterend", xad_inImage);
-
   googletag.cmd.push(function () {
     googletag.display(gpt_id);
   });
-
   var timeout = 0;
   var interval = setInterval(function () {
     var iframeAdx = divAds.querySelector("iframe");
@@ -209,66 +166,50 @@ function XadAdxInImage(_adUnit, _adSize, _mapping = [], _element, _image = 1, _m
     if(++timeout > 600) 
       clearInterval(interval);
   }, 1000);
-
   inImage_Close.addEventListener("click", function () {
     xad_inImage.style.visibility = "hidden";
   });
 }
-
 function XadAdxInImages(_adUnit, _start, _end, _adSize, _mapping = [], _element, _image = [], _marginBottom=0) {
   var images = document.body.querySelectorAll(_element);
   if(images.length == 0) return;
-
   for (var i = 1; i <= images.length; i++) {
     if(_start > _end) break;
-
     if(_image.length > 0 && !_image.includes(i)) continue;
-
     var adUnit = _adUnit + (_start++);
-
     XadAdxInImage(adUnit, _adSize, _mapping, _element, i, _marginBottom);
   }
 }
-
 function XadAdxInPage(_adUnit, _element, _marginTop = -1) {
   if (window.innerWidth >= 768) return;
-
   var ad_width = 300;
   var ad_height = 600;
   var gpt_id = randomID();
-
   checkGPTExists();
-
   window.googletag = window.googletag || {cmd: []};
   googletag.cmd.push(function() {
     googletag.defineSlot(_adUnit, [ad_width, ad_height], gpt_id).addService(googletag.pubads());
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
  var parent = document.querySelectorAll(_element)[0];
   var midpoint = Math.min(Math.floor(parent.childElementCount / 2), 4);
   parent.children[midpoint - 1].insertAdjacentHTML("afterend", "<div id='xad-inpage-ad'></div>");
-
   var html = `<div id="inpage-content-ad" style="overflow: hidden; position: relative; z-index: 2; width: 100%;">
     <div id="inpage-ad" style="display:none;">
       <div id='${gpt_id}' style='min-width: ${ad_width}px; min-height: ${ad_height}px;'></div>
     </div>
   </div>`;
   document.getElementById("xad-inpage-ad").insertAdjacentHTML("beforeend", html);
-
   googletag.cmd.push(() => {
     googletag.display(gpt_id);
   });
-
   window.addEventListener("scroll", function () {
     var inpageContentAds = document.getElementById("inpage-content-ad");
     if (!inpageContentAds) return;
-
     _marginTop >= 0 ? _marginTop : (window.innerHeight - ad_height) / 2;
     var top = inpageContentAds.getBoundingClientRect().top - _marginTop;
     var bot = top > 0 ? ad_height : ad_height + top;
-
     if (window.innerWidth < 768) {
       inpageContentAds.style.height = ad_height+"px";
       document.getElementById("inpage-ad").style.cssText =`
@@ -282,41 +223,31 @@ function XadAdxInPage(_adUnit, _element, _marginTop = -1) {
     }
   });
 }
-
 //_insertPosition = 0: beforeend, position = 1: afterbegin, position = 2: beforebegin, position = 3: afterend
 function XadAdxMultipleSize(_adUnit, _element, _insertPosition=0, _marginTop=0) {
   if (window.innerWidth >= 768) return;
-
   MultipleSizeAdd(_adUnit, _element, _insertPosition);
   MultipleSizeScroll(_marginTop);
 }
-
 //_insertPosition = 0: beforeend, _insertPosition = 1: afterbegin, _insertPosition = 2: beforebegin, _insertPosition = 3: afterend
 function XadAdxMultipleSizes(_adUnit, _start, _end, _elements, _insertPosition=2, _marginTop=0, _minScreen = 1, _position_start=0, _position_end=0) {
   if (window.innerWidth >= 768) return;
-
   var elements = document.querySelectorAll(_elements);
   if(elements.length == 0) return;
-
   var lastSpaceIndex = _elements.lastIndexOf(' ');
   var _element_str = lastSpaceIndex === -1 ? _elements : _elements.slice(0, lastSpaceIndex).trim() + ' > ' + _elements.slice(lastSpaceIndex + 1).trim();
-
   var min_ad = 0;
   var position = 1;
   for (var i = 0; i < elements.length; i++) {
     if(_start > _end) break;
-
     var _element = _element_str+':nth-of-type('+(i+1)+')';
-
     if(_insertPosition == 0 || _insertPosition == 3) {
       if(i == 0 || elements[i].offsetTop + elements[i].clientHeight - min_ad - (screen.height * _minScreen) >= 0) {
         if(_position_start <= position++)  {
           var adUnit = _adUnit + (_start++);
           MultipleSizeAdd(adUnit, _element, _insertPosition);
-
           if(_position_end != 0 && _position_end < position) break;
         }
-
         if(i < elements.length - 1)
           min_ad = elements[i+1].offsetTop;
       }
@@ -325,30 +256,23 @@ function XadAdxMultipleSizes(_adUnit, _start, _end, _elements, _insertPosition=2
         if(_position_start <= position++)  {
           var adUnit = _adUnit + (_start++);
           MultipleSizeAdd(adUnit, _element, _insertPosition);
-
           if(_position_end != 0 && _position_end < position) break;
         }
-
         min_ad = elements[i].offsetTop;
-
         if(i < elements.length - 1) continue;
       }
-
       if(i == elements.length - 1 && elements[i].offsetTop + elements[i].clientHeight - min_ad - (screen.height * _minScreen) >= 0) {
         var adUnit = _adUnit + (_start++);
         MultipleSizeAdd(adUnit, _element, _insertPosition == 1 ? 0 : 3);
       }
     }
   }
-
   MultipleSizeScroll(_marginTop);
 }
-
 //_insertPosition = 0: beforeend, position = 1: afterbegin, position = 2: beforebegin, position = 3: afterend
 function MultipleSizeAdd(_adUnit, _element, _insertPosition=0) {
   var element = document.body.querySelector(_element);
   if(element == null) return;
-
   checkGPTExists();
   
   var gpt_id = randomID();
@@ -360,7 +284,6 @@ function MultipleSizeAdd(_adUnit, _element, _insertPosition=0) {
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   var html = `<div class="xad-multiplesize" style="margin-top:10px;margin-bottom:10px;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);">
       <span style="display: inline-block;width: 100%;font-size: 14px;text-align: center;color: #9e9e9e;background-color: #f1f1f1;">Ads By Xad</span>
       <div class="ms-content-ad" style="position: relative;min-height: 600px;">
@@ -370,27 +293,22 @@ function MultipleSizeAdd(_adUnit, _element, _insertPosition=0) {
       </div>
       <span style="display: inline-block;width: 100%;font-size: 14px;text-align: center;color: #9e9e9e;background-color: #f1f1f1;">Scroll to Continue</span>
     </div>`;
-
   if(_insertPosition == 1) element.insertAdjacentHTML("afterbegin", html);
   else if(_insertPosition == 2) element.insertAdjacentHTML("beforebegin", html);
   else if(_insertPosition == 3) element.insertAdjacentHTML("afterend", html);
   else element.insertAdjacentHTML("beforeend", html);
-
   googletag.cmd.push(function () {
     googletag.display(gpt_id);
   });
 }
-
 function MultipleSizeScroll(_marginTop) {
   document.addEventListener("scroll", function (e) {
     var elements = document.getElementsByClassName("xad-multiplesize");
     for (var i = 0; i < elements.length; i++) {
       var e = elements[i];
-
       var div = e.querySelector(".ms-ad");
       var h = e.querySelector(".ms-content-ad").clientHeight;
       var ch = e.querySelector(".ms-ad").clientHeight;
-
       var ap = e.querySelector(".ms-content-ad").getBoundingClientRect().top;
       if (ch < h) {
         if (ap >= _marginTop) {
@@ -422,21 +340,16 @@ function MultipleSizeScroll(_marginTop) {
     }
   });
 }
-
 function XadAdxFirstView(_adUnit, _adSize = [300, 600]) {
   if (window.innerWidth >= 768) return;
-
   checkGPTExists();
-
   var gpt_id = randomID();
-
   window.googletag = window.googletag || {cmd: []};
   googletag.cmd.push(function() {
     googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   var html = `<div class="xad-firstview" style="display: block; position: fixed; width: 100%; height: 100vh; top: 0px; left: 0px; text-align: center; opacity: 1; background-color: rgba(255, 255, 255, 0.7); visibility: hidden; z-index: 2147483647;">
       <div class="xad-firstview-close" style="display: none; position: absolute; width: 60px !important; height: 25px !important; top: 80px !important; right: 0px !important; cursor: pointer; background: rgba(183, 183, 183, 0.71); padding: 2px; border-radius: 20px 0px 0px 20px; z-index: 9999;">
         <span style="position: absolute; font-size: 15px; top: 50%; left: 50%; transform: translate(-50%, -50%);">close</span>
@@ -444,25 +357,20 @@ function XadAdxFirstView(_adUnit, _adSize = [300, 600]) {
       <div id="${gpt_id}" style="position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%;"></div>
     </div>`;
   document.body.insertAdjacentHTML("beforeend", html);
-
   googletag.cmd.push(function() {
     googletag.display(gpt_id);
   });
-
   document.body.querySelector('.xad-firstview-close').addEventListener("click", function () {
     document.body.querySelector('.xad-firstview').style.display = "none";
   });
-
   var timer = 0
   var interval = setInterval(() => {
     var ads = document.getElementById(gpt_id).querySelector("iframe");
     if (ads && ads.getAttribute("data-load-complete") == "true") {
       clearInterval(interval);
-
       document.body.querySelector('.xad-firstview').style.visibility = "visible";
       document.body.querySelector('.xad-firstview-close').style.display = "block";
     }
-
     if(++timer > 600) {
       clearInterval(interval);
     }
@@ -499,7 +407,6 @@ function XadAdxFirstViewExt(_adUnit, _adSize = [300, 600], _isDisplay = 0, _page
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   var html = `<div class="xad-firstview" style="display: block; position: fixed; width: 100%; height: 100vh; top: 0px; left: 0px; text-align: center; opacity: 1; background-color: rgba(255, 255, 255, 0.7); visibility: hidden; z-index: 2147483647;">
       <div class="xad-firstview-close" style="display: none; position: absolute; width: 85px !important; height: 25px !important; top: 80px !important; right: 0px !important; cursor: pointer; background: rgba(0, 112, 186,1); padding: 2px; border-radius: 20px 0px 0px 20px; z-index: 9999;">
         <span style="position: absolute; font-size: 15px; top: 50%; left: 50%; transform: translate(-50%, -50%); color:white">CLOSE</span>
@@ -507,15 +414,12 @@ function XadAdxFirstViewExt(_adUnit, _adSize = [300, 600], _isDisplay = 0, _page
       <div id="${gpt_id}" style="position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%;"></div>
     </div>` ;
   document.body.insertAdjacentHTML("beforeend", html);
-
   googletag.cmd.push(function() {
     googletag.display(gpt_id);
   });
-
   document.body.querySelector('.xad-firstview-close').addEventListener("click", function () {
     document.body.querySelector('.xad-firstview').style.display = "none";
   });
-
   var timer = 0;
   var interval = setInterval(() => {
     var ads = document.getElementById(gpt_id).querySelector("iframe");
@@ -524,16 +428,13 @@ function XadAdxFirstViewExt(_adUnit, _adSize = [300, 600], _isDisplay = 0, _page
       document.body.querySelector('.xad-firstview').style.visibility = "visible";
       document.body.querySelector('.xad-firstview-close').style.display = "block";
     }
-
     if(++timer > 600) {
       clearInterval(interval);
     }
   }, 1000);
 }
-
 function XadAdxRewarded(_adUnit) {
   checkGPTExists();
-
   window.googletag = window.googletag || { cmd: [] }; 
   var rewardedSlot; 
   var rewardPayload;
@@ -547,7 +448,6 @@ function XadAdxRewarded(_adUnit) {
       }); 
       googletag.pubads().addEventListener('rewardedSlotClosed', (event) => {
         // console.log('Closed by the user!');
-
         if (rewardPayload) { 
           rewardPayload = null; 
         } 
@@ -555,7 +455,6 @@ function XadAdxRewarded(_adUnit) {
           googletag.destroySlots([rewardedSlot]); 
         }
         window.xad_rewarded_done = true;
-
       }); 
       googletag.pubads().addEventListener('rewardedSlotGranted', (event) => { 
         rewardPayload = event.payload; 
@@ -578,7 +477,6 @@ function XadAdxRewarded(_adUnit) {
 function XadAdxRewardedExt(_adUnit, _isDisplay = 0, _pageView = [0]) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
-
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
   const now = new Date();
   if(pageViewCount == 0)
@@ -600,7 +498,6 @@ function XadAdxRewardedExt(_adUnit, _isDisplay = 0, _pageView = [0]) {
   if (_pageView.length == 1 && _pageView.includes(0)) {}
   else if (_pageView.length > 0 && !_pageView.includes(pageViewCount)) return;
   checkGPTExists();
-
   window.googletag = window.googletag || { cmd: [] }; 
   var rewardedSlot; 
   var rewardPayload;
@@ -640,11 +537,9 @@ function XadAdxRewardedExt(_adUnit, _isDisplay = 0, _pageView = [0]) {
     } 
   });
 }
-
 function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView = [0], _bottom = 0) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
-
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
   const now = new Date();
   if(pageViewCount == 0)
@@ -679,7 +574,6 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
-
   googletag.cmd.push(function() {
     googletag.display(gpt_id);
   });
@@ -688,7 +582,6 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
   window.addEventListener("scroll", function () {
     var ads = document.getElementById(gpt_id).querySelector("iframe");
     var catfishAd = document.getElementById('catfish-ad');
-
     if (window.scrollY > triggerPosition && !isVisible && ads && ads.getAttribute("data-load-complete") == "true") {
       catfishAd.style.display = 'flex';
       isVisible = true;
@@ -697,7 +590,6 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
       isVisible = false;
     }
   });
-
   document.getElementById('close-catfish').addEventListener("click", function () {
     document.getElementById('catfish-ad').style.display = "none";
   });
@@ -708,63 +600,54 @@ function XadAdxCatfish(_adUnit, _adSize = [320, 100], _isDisplay = 0, _pageView 
     }`;
   document.head.appendChild(style);
 }
-
 function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = [0], _bottom = 0) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
-
-  // Auto chọn size nếu không truyền _adSize
   if (!_adSize) {
     _adSize = window.innerWidth < 768 ? [320, 100] : [728, 90];
   }
-
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
   const now = new Date();
   if (pageViewCount == 0) {
     localStorage.setItem('expiry', now.getTime());
-  } else {
-    if (now.getTime() - Number(localStorage.getItem('expiry')) > 180000) {
-      pageViewCount = 0;
-      localStorage.setItem('expiry', now.getTime());
-    }
-  }
-
-  if (!Array.isArray(_pageView)) {
-    _pageView = [0];
+  } else if (now.getTime() - Number(localStorage.getItem('expiry')) > 180000) {
+    pageViewCount = 0;
+    localStorage.setItem('expiry', now.getTime());
   }
   localStorage.setItem('pageViewCount', ++pageViewCount);
-
-  if (_pageView.length == 1 && _pageView.includes(0)) {
-    // luôn hiển thị
-  } else if (_pageView.length > 0 && !_pageView.includes(pageViewCount)) return;
-
-  checkGPTExists();
+  if (!Array.isArray(_pageView)) _pageView = [0];
+  if (_pageView.length > 0 && !_pageView.includes(0) && !_pageView.includes(pageViewCount)) return;
   var gpt_id = randomID();
-  var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: 100%; height: 110px; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: flex; justify-content: center; align-items: center; bottom: ${_bottom}px;">
+  var html = `<div id="catfish-ad" class="catfish-hidden" style="position: fixed; bottom: -120px; left: 0; width: ${_adSize[0]}px; height: ${_adSize[1]}px; left: 0; right: 0; margin: 0 auto; background-color: white; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); transition: bottom 1.1s ease-in-out; display: none;">
         <button id="close-catfish" style="position: absolute; top: 0px; right: 0px; background: #D6DCD9; border: none; color: #BBC4BF; font-size: 18px; cursor: pointer; width: 20px; height: 20px;">×</button>
         <div id="${gpt_id}" style="min-width: ${_adSize[0]}px; min-height: ${_adSize[1]}px;"></div>
     </div>`;
   document.body.insertAdjacentHTML("beforeend", html);
-
+  var style = document.createElement('style');
+  style.innerHTML = `.catfish-hidden { display: none; }`;
+  document.head.appendChild(style);
+  
   window.googletag = window.googletag || { cmd: [] };
+  let isAdLoaded = false;
+
   googletag.cmd.push(function () {
-    googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
+    const slot = googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
-  });
 
-  googletag.cmd.push(function () {
+    googletag.pubads().addEventListener('slotRenderEnded', function (event) {
+      if (event.slot === slot && !event.isEmpty) {
+        isAdLoaded = true; 
+      }
+    });
     googletag.display(gpt_id);
   });
-
   var triggerPosition = window.innerHeight * 1.5;
   var isVisible = false;
+  var catfishAd = document.getElementById('catfish-ad');
 
   window.addEventListener("scroll", function () {
-    var ads = document.getElementById(gpt_id).querySelector("iframe");
-    var catfishAd = document.getElementById('catfish-ad');
-
-    if (window.scrollY > triggerPosition && !isVisible && ads && ads.getAttribute("data-load-complete") == "true") {
+    if (isAdLoaded && window.scrollY > triggerPosition && !isVisible) {
       catfishAd.style.display = 'flex';
       isVisible = true;
     } else if (window.scrollY <= triggerPosition && isVisible) {
@@ -772,17 +655,10 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
       isVisible = false;
     }
   });
-
   document.getElementById('close-catfish').addEventListener("click", function () {
-    document.getElementById('catfish-ad').style.display = "none";
+    catfishAd.style.display = "none";
+    isVisible = false;
   });
-
-  var style = document.createElement('style');
-  style.innerHTML = `
-    .catfish-hidden {
-      display: none;
-    }`;
-  document.head.appendChild(style);
 }
 //===========================================================================
 //ADSENSE
@@ -790,12 +666,9 @@ function XadAdxCatfishAuto(_adUnit, _adSize = null, _isDisplay = 0, _pageView = 
 function XadAdsense(_adClient, _adSlot, _adSize=[], _responsive=0, _element, _insertPosition=0) {
   var element = document.body.querySelector(_element);
   if(element == null) return;
-
   checkAdsenseJSExists(_adClient);
-
   var ad_width = _adSize[0];
   var ad_height = _adSize[1];
-
   if(_responsive==0) {
     var html = `<div class="xad-banner-ad">
       <center>
@@ -819,26 +692,19 @@ function XadAdsense(_adClient, _adSlot, _adSize=[], _responsive=0, _element, _in
       </center>
     </div>`;
   }
-
   if(_insertPosition == 1) element.insertAdjacentHTML("afterbegin", html);
   else if(_insertPosition == 2) element.insertAdjacentHTML("beforebegin", html);
   else if(_insertPosition == 3) element.insertAdjacentHTML("afterend", html);
   else element.insertAdjacentHTML("beforeend", html);
-
   (adsbygoogle = window.adsbygoogle || []).push({});
 }
-
 function XadAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
   if (window.innerWidth >= 768) return;
-
   var ad_width = 300;
   var ad_height = 600;
-
   checkAdsenseJSExists(_adClient);
-
   var midpoint = Math.min(Math.floor(document.querySelectorAll(_element).length / 2), 4);
   document.querySelectorAll(_element)[midpoint - 1].insertAdjacentHTML("afterend", "<div id='xad-inpage-ad'></div>");
-
   var html = `<div id="inpage-content-ad" style="overflow: hidden; position: relative; z-index: 2; width: 100%;">
     <div id="inpage-ad" style="display:none;">
       <ins class="adsbygoogle"
@@ -849,17 +715,13 @@ function XadAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
     </div>
   </div>`;
   document.getElementById("xad-inpage-ad").insertAdjacentHTML("beforeend", html);
-
   (adsbygoogle = window.adsbygoogle || []).push({});
-
   window.addEventListener("scroll", function () {
     var inpageContentAds = document.getElementById("inpage-content-ad");
     if (!inpageContentAds) return;
-
     _marginTop >= 0 ? _marginTop : (window.innerHeight - ad_height) / 2;
     var top = inpageContentAds.getBoundingClientRect().top - _marginTop;
     var bot = top > 0 ? ad_height : ad_height + top;
-
     if (window.innerWidth < 768) {
       inpageContentAds.style.height = ad_height+"px";
       document.getElementById("inpage-ad").style.cssText = `
@@ -872,15 +734,11 @@ function XadAdsenseInPage(_adClient, _adSlot, _element, _marginTop = -1) {
     }
   });
 }
-
 function XadAdsenseFirstView(_adClient, _adSlot, _adSize = [300, 600]) {
   if (window.innerWidth >= 768) return;
-
   checkAdsenseJSExists(_adClient);
-
   var ad_width = _adSize[0];
   var ad_height = _adSize[1];
-
   var html = `<div class="xad-firstview" style="display: block; position: fixed; width: 100%; height: 100vh; top: 0px; left: 0px; text-align: center; opacity: 1; background-color: rgba(255, 255, 255, 0.7); visibility: hidden; z-index: 2147483647;">
       <div class="xad-firstview-close" style="display: none; position: absolute; width: 160px !important; height: 30px !important; top: 5% !important; right: 0px !important; cursor: pointer; background: rgba(183, 183, 183, 0.71); padding: 2px; border-radius: 20px 0px 0px 20px; z-index: 9999;">
         <span style="position: absolute; font-size: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%);">Close</span>
@@ -892,29 +750,23 @@ function XadAdsenseFirstView(_adClient, _adSlot, _adSize = [300, 600]) {
      </ins>
     </div>`;
   document.body.insertAdjacentHTML("beforeend", html);
-
   (adsbygoogle = window.adsbygoogle || []).push({});
-
   document.body.querySelector('.xad-firstview-close').addEventListener("click", function () {
     document.body.querySelector('.xad-firstview').style.display = "none";
   });
-
   var timer = 0
   var interval = setInterval(() => {
     var ads = document.querySelector(".xad-firstview ins");
     if (ads && ads.getAttribute("data-ad-status") == "filled") {
       document.body.querySelector('.xad-firstview').style.visibility = "visible";
       document.body.querySelector('.xad-firstview-close').style.display = "block";
-
       clearInterval(interval);
     }
-
     if(++timer > 600) {
       clearInterval(interval);
     }
   }, 1000);
 }
-
 function checkGPTExists() {
   var scripts = document.head.querySelectorAll('script[src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"]');
   if (scripts.length > 0) {
@@ -924,11 +776,9 @@ function checkGPTExists() {
     gpt_script.src = "https://securepubads.g.doubleclick.net/tag/js/gpt.js";
     gpt_script.async = true;
     document.head.appendChild(gpt_script);
-
     return false;
   }
 }
-
 var ar = [];
 function randomID() {
   var r = Math.random().toString().substring(2);
@@ -939,10 +789,8 @@ function randomID() {
     r = Math.random().toString().substring(2);
   }
   ar.push(r);
-
   return "xad-gpt-ad-" + r + "-0";
 }
-
 function checkAdsenseJSExists(client_id) {
   var scripts = document.head.querySelectorAll('script[src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+client_id+'"]');
   if (scripts.length > 0) {
@@ -953,7 +801,6 @@ function checkAdsenseJSExists(client_id) {
     adsense_script.async = true;
     adsense_script.crossOrigin = "anonymous";
     document.head.appendChild(adsense_script);
-
     return false;
   }
 }
