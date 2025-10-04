@@ -433,7 +433,7 @@ function XadAdxFirstViewExt(_adUnit, _adSize = [300, 600], _isDisplay = 0, _page
     }
   }, 1000);
 }
-function XadAdxRewarded(_adUnit) {
+function XadAdxRewardedExt(_adUnit) {
   checkGPTExists();
   window.googletag = window.googletag || { cmd: [] }; 
   var rewardedSlot; 
@@ -474,7 +474,7 @@ function XadAdxRewarded(_adUnit) {
     } 
   }); 
 }
-function XadAdxRewardedExt(_adUnit, _isDisplay = 0, _pageView = [0]) {
+function XadAdxRewarded(_adUnit, _isDisplay = 0, _pageView = [0]) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
