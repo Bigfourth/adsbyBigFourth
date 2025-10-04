@@ -492,7 +492,7 @@ function XadAdxRewarded(_adUnit, _isDisplay = 0, _pageView = [0]) {
     }
   }
   if (!Array.isArray(_pageView)) {
-    _pageView = [0];
+    _pageView = [1, 3, 6, 9];
   }
   localStorage.setItem('pageViewCount', ++pageViewCount);
   if (_pageView.length == 1 && _pageView.includes(0)) {}
