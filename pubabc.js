@@ -475,64 +475,77 @@ function XadAdxRewardedExt(_adUnit) {
   }); 
 }
 function XadAdxRewarded(_adUnit, _isDisplay = 0, _pageView = [0]) {
-  if (_isDisplay === 1 && window.innerWidth < 768) return;
-  if (_isDisplay === 2 && window.innerWidth >= 768) return;
-  let pageViewCount = localStorage.getItem('pageViewCount') || 0;
-  const now = new Date();
-  if(pageViewCount == 0)
-  {
-    localStorage.setItem('expiry', now.getTime());
+  if (sessionStorage.getItem('xad_rewarded_called')) {
+    console.log('Rewarded ad already called in this session');
+    return;
   }
-  else
-  {
-    if(now.getTime() - Number(localStorage.getItem('expiry')) > 180000)
-    {
-      pageViewCount = 0;
-      localStorage.setItem('expiry', now.getTime());
-    }
+  if (_isDisplay === 1 && window.innerWidth < 768) return; 
+  if (_isDisplay === 2 && window.innerWidth >= 768) return; 
+
+  const now = new Date().getTime();
+  let pageViewCount = Number(localStorage.getItem('pageViewCount')) || 0;
+  let expiry = Number(localStorage.getItem('expiry')) || 0;
+  
+  if (pageViewCount === 0 || (now - expiry) > 180000) {
+    pageViewCount = 0;
+    localStorage.setItem('pageViewCount', 0); 
+    localStorage.setItem('expiry', now);
   }
+  
+  pageViewCount++;
+  localStorage.setItem('pageViewCount', pageViewCount);
+  
   if (!Array.isArray(_pageView)) {
-    _pageView = [1, 3, 6, 9];
+    _pageView = [1, 3, 6, 9]; 
   }
-  localStorage.setItem('pageViewCount', ++pageViewCount);
-  if (_pageView.length == 1 && _pageView.includes(0)) {}
-  else if (_pageView.length > 0 && !_pageView.includes(pageViewCount)) return;
-  checkGPTExists();
+  
+  if (_pageView.length == 1 && _pageView.includes(0)) {
+  } else if (_pageView.length > 0 && !_pageView.includes(pageViewCount)) {
+    return; 
+  }
+  
+  sessionStorage.setItem('xad_rewarded_called', 'true');
+  checkGPTExists(); 
   window.googletag = window.googletag || { cmd: [] }; 
+  
   var rewardedSlot; 
   var rewardPayload;
+  
   googletag.cmd.push(() => { 
-    rewardedSlot = googletag.defineOutOfPageSlot(_adUnit, googletag.enums.OutOfPageFormat.REWARDED); 
+    rewardedSlot = googletag.defineOutOfPageSlot(
+      _adUnit, 
+      googletag.enums.OutOfPageFormat.REWARDED
+    ); 
     if (rewardedSlot) { 
       rewardedSlot.addService(googletag.pubads()); 
+      
       googletag.pubads().addEventListener('rewardedSlotReady', (event) => { 
-        // console.log('Rewarded ad slot is ready.');
         event.makeRewardedVisible(); 
       }); 
+      
       googletag.pubads().addEventListener('rewardedSlotClosed', (event) => {
-        // console.log('Closed by the user!');
         if (rewardPayload) { 
           rewardPayload = null; 
         } 
         if (rewardedSlot) { 
           googletag.destroySlots([rewardedSlot]); 
         }
-        window.xad_rewarded_done = true;
+        window.xad_rewarded_done = true; 
       }); 
+    
       googletag.pubads().addEventListener('rewardedSlotGranted', (event) => { 
         rewardPayload = event.payload; 
-        // console.log('Reward granted.');
       }); 
       googletag.pubads().addEventListener('slotRenderEnded', (event) => { 
         if (event.slot === rewardedSlot && event.isEmpty) { 
-          // console.log('No ad returned for rewarded ad slot.');
-          window.xad_rewarded_done = true;
+          window.xad_rewarded_done = true; // Đánh dấu hoàn thành
         } 
       }); 
+      
       googletag.enableServices(); 
       googletag.display(rewardedSlot); 
+      
     } else { 
-      // console.log('Rewarded ads are not supported on this page.');
       window.xad_rewarded_done = true;
     } 
   });
