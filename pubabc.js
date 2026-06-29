@@ -376,63 +376,6 @@ function XadAdxFirstView(_adUnit, _adSize = [300, 600]) {
     }
   }, 1000);
 }
-function XadAdxFirstViewExt(_adUnit, _adSize = [300, 250], _isDisplay = 0, _pageView = [0]) {
-  if (_isDisplay === 1 && window.innerWidth < 768) return;
-  if (_isDisplay === 2 && window.innerWidth >= 768) return;
-  let pageViewCount = localStorage.getItem('pageViewCount') || 0;
-  const now = new Date();
-  if(pageViewCount == 0)
-  {
-    localStorage.setItem('expiry', now.getTime());
-  }
-  else
-  {
-    if(now.getTime() - Number(localStorage.getItem('expiry')) > 180000)
-    {
-      pageViewCount = 0;
-      localStorage.setItem('expiry', now.getTime());
-    }
-  }
-  if (!Array.isArray(_pageView)) {
-    _pageView = [0];
-  }
-  localStorage.setItem('pageViewCount', ++pageViewCount);
-  if (_pageView.length == 1 && _pageView.includes(0)) {}
-  else if (_pageView.length > 0 && !_pageView.includes(pageViewCount)) return;
-  checkGPTExists();
-  var gpt_id = randomID();
-  window.googletag = window.googletag || {cmd: []};
-  googletag.cmd.push(function() {
-    googletag.defineSlot(_adUnit, _adSize, gpt_id).addService(googletag.pubads());
-    googletag.pubads().enableSingleRequest();
-    googletag.enableServices();
-  });
-  var html = `<div class="xad-firstview" style="display: block; position: fixed; width: 100%; height: 100vh; top: 0px; left: 0px; text-align: center; opacity: 1; background-color: rgba(255, 255, 255, 0.7); visibility: hidden; z-index: 2147483647;">
-      <div class="xad-firstview-close" style="display: none; position: absolute; width: 85px !important; height: 25px !important; top: 80px !important; right: 0px !important; cursor: pointer; background: rgba(0, 112, 186,1); padding: 2px; border-radius: 20px 0px 0px 20px; z-index: 9999;">
-        <span style="position: absolute; font-size: 15px; top: 50%; left: 50%; transform: translate(-50%, -50%); color:white">CLOSE</span>
-      </div>
-      <div id="${gpt_id}" style="position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%;"></div>
-    </div>` ;
-  document.body.insertAdjacentHTML("beforeend", html);
-  googletag.cmd.push(function() {
-    googletag.display(gpt_id);
-  });
-  document.body.querySelector('.xad-firstview-close').addEventListener("click", function () {
-    document.body.querySelector('.xad-firstview').style.display = "none";
-  });
-  var timer = 0;
-  var interval = setInterval(() => {
-    var ads = document.getElementById(gpt_id).querySelector("iframe");
-    if (ads && ads.getAttribute("data-load-complete") == "true") {
-      clearInterval(interval);
-      document.body.querySelector('.xad-firstview').style.visibility = "visible";
-      document.body.querySelector('.xad-firstview-close').style.display = "block";
-    }
-    if(++timer > 600) {
-      clearInterval(interval);
-    }
-  }, 1000);
-}
 function XadAdxRewardedExt(_adUnit) {
   checkGPTExists();
   window.googletag = window.googletag || { cmd: [] }; 
