@@ -376,7 +376,7 @@ function XadAdxFirstView(_adUnit, _adSize = [300, 600]) {
     }
   }, 1000);
 }
-function XadAdxFirstViewExt(_adUnit, _adSize = [300, 600], _isDisplay = 0, _pageView = [0]) {
+function XadAdxFirstViewExt(_adUnit, _adSize = [300, 250], _isDisplay = 0, _pageView = [0]) {
   if (_isDisplay === 1 && window.innerWidth < 768) return;
   if (_isDisplay === 2 && window.innerWidth >= 768) return;
   let pageViewCount = localStorage.getItem('pageViewCount') || 0;
