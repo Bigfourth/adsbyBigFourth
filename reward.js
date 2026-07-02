@@ -1,5 +1,5 @@
 /*!
- * content-gate.js v2.0.0 — Lock the page after X% of its height, unlock with a GPT rewarded ad.
+ * content-gate.js v2.1.1 — Lock the page after X% of its height, unlock with a GPT rewarded ad.
  * No selectors, no div counting. Works on any page by measuring real pixel height.
  *
  * v2.0.0 changes:
@@ -31,6 +31,7 @@ window.ContentGate = (function () {
     simulateWhenUnavailable: true, // show fake ad when GPT is absent (dev/test)
     simulateSeconds: 5,
     loadTimeoutMs: 8000,        // max wait after user clicks Unlock before treating as no-fill
+    maxCloseAttempts: 0,        // >0: user closed the ad without reward N times -> unlock anyway (0 = off)
     forceRefresh: false,        // true if the page uses disableInitialLoad() (e.g. Prebid)
     texts: {
       title: 'The rest of this article is locked',
@@ -44,6 +45,7 @@ window.ContentGate = (function () {
   var rewardedSlot = null, makeVisibleFn = null;
   var slotState = 'idle';   // idle | loading | ready | shown | sim
   var pendingShow = false, unlocked = false, loadTimer = null;
+  var closeCount = 0;
   var els = {}, gateTop = 0;
 
   /* ---------------------------------------------------------------- styles */
@@ -242,11 +244,18 @@ window.ContentGate = (function () {
       });
 
       gt.pubads().addEventListener('rewardedSlotGranted', function (ev) {
-        if (ev.slot === rewardedSlot) grantReward(ev.payload || null);
+        if (ev.slot !== rewardedSlot) return;
+        grantReward(ev.payload || null);
       });
 
       gt.pubads().addEventListener('rewardedSlotClosed', function (ev) {
-        if (ev.slot === rewardedSlot) { destroyRewarded(); setBtnLoading(false); }
+        if (ev.slot !== rewardedSlot) return;
+        pendingShow = false;
+        destroyRewarded();
+        setBtnLoading(false);
+        restorePageScroll();
+        closeCount++;
+        if (CFG.maxCloseAttempts > 0 && closeCount >= CFG.maxCloseAttempts) grantReward(null);
       });
 
       gt.pubads().addEventListener('slotRenderEnded', function (ev) {
@@ -272,6 +281,38 @@ window.ContentGate = (function () {
     setBtnLoading(false);
     slotState = 'shown';
     if (typeof makeVisibleFn === 'function') makeVisibleFn();
+  }
+
+  /* Manual escape hatch — ContentGate.forceClose(unlockAfter).
+     GPT renders the rewarded overlay as a fixed-position container appended to
+     <body> and locks page scroll. When a broken creative hangs (dead close
+     button), destroySlots() alone can leave the dead overlay behind — this
+     removes it explicitly and restores scroll. Call from console or from your
+     own error handling; pass true to also unlock the content. */
+  function forceCleanupOverlay(unlockAfter) {
+    destroyRewarded();
+    try {
+      var frames = document.querySelectorAll('iframe[id^="google_ads_iframe"]');
+      for (var i = 0; i < frames.length; i++) {
+        var f = frames[i];
+        if (f.id.indexOf(CFG.adUnitPath) === -1) continue;
+        var node = f, top = null;
+        while (node && node.parentElement && node.parentElement !== document.body) node = node.parentElement;
+        top = (node && node.parentElement === document.body) ? node : null;
+        if (top && getComputedStyle(top).position === 'fixed') top.parentNode.removeChild(top);
+        else if (f.parentNode) f.parentNode.removeChild(f);
+      }
+    } catch (e) {}
+    restorePageScroll();
+    setBtnLoading(false);
+    if (unlockAfter) grantReward(null);
+  }
+
+  function restorePageScroll() {
+    try {
+      if (document.body.style.overflow === 'hidden') document.body.style.overflow = '';
+      if (document.documentElement.style.overflow === 'hidden') document.documentElement.style.overflow = '';
+    } catch (e) {}
   }
 
   function destroyRewarded() {
@@ -374,5 +415,5 @@ window.ContentGate = (function () {
     else start();
   }
 
-  return { init: init, _grant: grantReward, _cfg: CFG, version: '2.0.0' };
+  return { init: init, forceClose: forceCleanupOverlay, _grant: grantReward, _cfg: CFG, version: '2.1.1' };
 })();
