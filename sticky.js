@@ -41,6 +41,7 @@
     bg: '#fafafa',
     offset: 110,         // left/right: distance from bottom (px), clears the bottom sticky
     kv: null,            // extra targeting: { key: 'value' | ['a','b'] }
+    anchorGuard: true,   // auto-hide top/bottom sticky when a Google anchor ad occupies the same edge
     sra: true,           // enable SRA if page hasn't enabled services yet
     sizeMapping: null    // override: [ [[minW,minH],[sizes]], ... ] largest first
   };
@@ -64,12 +65,33 @@
   // shrink/grow wrapper to the creative actually rendered
   function resizeWrap(st, w, h) {
     st.w = w; st.h = h; // collapse transform uses live dims
-    if (st.position === 'bottom' || st.position === 'top') {
-      st.wrap.style.height = (h + 5) + 'px';       // width stays 100%
-    } else {
-      st.wrap.style.width = w + 'px';
-      st.wrap.style.height = h + 'px';
+    st.wrap.style.height = (st.position === 'bottom' || st.position === 'top')
+      ? (h + 5) + 'px'
+      : h + 'px';
+    st.wrap.style.width = w + 'px'; // wrapper hugs creative on all positions
+  }
+
+  // detect a Google anchor ad (AdSense auto ads / GPT anchor) at the given edge
+  function anchorPresent(edge) {
+    // AdSense auto-ads anchor
+    var ins = doc.querySelectorAll(
+      'ins.adsbygoogle[data-anchor-status="displayed"],ins.adsbygoogle[data-anchor-shown="true"]');
+    var i, r;
+    for (i = 0; i < ins.length; i++) {
+      r = ins[i].getBoundingClientRect();
+      if (edge === 'bottom' && r.bottom >= win.innerHeight - 8 && r.height > 0) return true;
+      if (edge === 'top' && r.top <= 8 && r.height > 0) return true;
     }
+    // GPT anchor / any other google iframe pinned to the edge (not ours)
+    var ifr = doc.querySelectorAll('iframe[id^="google_ads_iframe"]');
+    for (i = 0; i < ifr.length; i++) {
+      if (ifr[i].closest('[id^="adsticky_"]')) continue; // skip our own slots
+      r = ifr[i].getBoundingClientRect();
+      if (r.height === 0 || r.width === 0) continue;
+      if (edge === 'bottom' && r.bottom >= win.innerHeight - 8 && r.top > win.innerHeight - 160) return true;
+      if (edge === 'top' && r.top <= 8 && r.bottom < 160) return true;
+    }
+    return false;
   }
 
   // sizes valid for CURRENT viewport (for wrapper geometry)
@@ -120,7 +142,7 @@
           if (e.size && typeof e.size[0] === 'number') {
             resizeWrap(st, e.size[0], e.size[1]);
           }
-          if (!st.closed) st.wrap.style.display = 'block';
+          if (!st.closed && !st.anchorBlocked) st.wrap.style.display = 'block';
         }
       });
 
@@ -141,6 +163,17 @@
 
       Object.keys(REGISTRY).forEach(function (id) {
         var st = REGISTRY[id];
+
+        // anchor guard: yield the edge to Google anchor ads (AdSense auto / GPT anchor)
+        if (st.cfg.anchorGuard && (st.position === 'bottom' || st.position === 'top')) {
+          var blocked = anchorPresent(st.position);
+          if (blocked !== st.anchorBlocked) {
+            st.anchorBlocked = blocked;
+            st.wrap.style.display = (blocked || st.closed || !st.filled) ? 'none' : 'block';
+          }
+          if (blocked) return; // hidden -> no refresh accrual
+        }
+
         if (st.closed || st.collapsed || !st.filled || !st.viewable) return;
         if (st.refreshCount >= st.cfg.maxRefreshes) return;
 
@@ -169,9 +202,9 @@
                ';box-shadow:0 0 4px rgba(0,0,0,.15);transition:transform .4s;display:none;';
     switch (position) {
       case 'bottom':
-        return base + 'left:0;bottom:0;width:100%;height:' + (h + 5) + 'px;text-align:center;';
+        return base + 'left:0;right:0;margin:0 auto;bottom:0;width:' + w + 'px;height:' + (h + 5) + 'px;text-align:center;';
       case 'top':
-        return base + 'left:0;top:0;width:100%;height:' + (h + 5) + 'px;text-align:center;';
+        return base + 'left:0;right:0;margin:0 auto;top:0;width:' + w + 'px;height:' + (h + 5) + 'px;text-align:center;';
       case 'left':
         return base + 'left:0;bottom:' + cfg.offset + 'px;width:' + w + 'px;height:' + h + 'px;';
       case 'right':
@@ -284,7 +317,7 @@
     var st = REGISTRY[divId] = {
       cfg: cfg, wrap: wrap, slot: null,
       position: position, w: w, h: h,      // live dims, updated on each render
-      closed: false, collapsed: false,
+      closed: false, collapsed: false, anchorBlocked: false,
       viewable: false, filled: false,
       elapsed: 0, refreshCount: 0
     };
