@@ -1,5 +1,5 @@
 /**
- * adsticky v1.0 — universal sticky ad library (GPT)
+ * adsticky v2.0 — universal sticky ad library (GPT)
  *
  * API:
  *   adsticky(adUnitPath, position [, options])
@@ -309,10 +309,6 @@
     wrap.appendChild(closeBtn);
     wrap.appendChild(adDiv);
 
-    var mount = function () { doc.body.appendChild(wrap); };
-    if (doc.body) mount();
-    else doc.addEventListener('DOMContentLoaded', mount);
-
     /* --- state --- */
     var st = REGISTRY[divId] = {
       cfg: cfg, wrap: wrap, slot: null,
@@ -322,29 +318,34 @@
       elapsed: 0, refreshCount: 0
     };
 
-    /* --- GPT --- */
+    /* --- GPT (only after wrapper exists in DOM — head-safe) --- */
     bindGlobal();
-    googletag.cmd.push(function () {
-      // standalone-safe: enable SRA only if services not yet enabled by the page
-      if (cfg.sra && !win.googletag.pubadsReady) {
-        try { googletag.pubads().enableSingleRequest(); } catch (err) {}
-      }
+    var mount = function () {
+      doc.body.appendChild(wrap);
+      googletag.cmd.push(function () {
+        // standalone-safe: enable SRA only if services not yet enabled by the page
+        if (cfg.sra && !win.googletag.pubadsReady) {
+          try { googletag.pubads().enableSingleRequest(); } catch (err) {}
+        }
 
-      st.slot = googletag.defineSlot(adUnitPath, allSizes(mapping), divId)
-        .addService(googletag.pubads());
+        st.slot = googletag.defineSlot(adUnitPath, allSizes(mapping), divId)
+          .addService(googletag.pubads());
 
-      var msb = googletag.sizeMapping();
-      mapping.forEach(function (m) { msb.addSize(m[0], m[1]); });
-      st.slot.defineSizeMapping(msb.build());
+        var msb = googletag.sizeMapping();
+        mapping.forEach(function (m) { msb.addSize(m[0], m[1]); });
+        st.slot.defineSizeMapping(msb.build());
 
-      st.slot.setTargeting('refresh', '0');
-      st.slot.setTargeting('pos', position);
-      if (cfg.kv) Object.keys(cfg.kv).forEach(function (k) {
-        st.slot.setTargeting(k, cfg.kv[k]);
+        st.slot.setTargeting('refresh', '0');
+        st.slot.setTargeting('pos', position);
+        if (cfg.kv) Object.keys(cfg.kv).forEach(function (k) {
+          st.slot.setTargeting(k, cfg.kv[k]);
+        });
+        googletag.enableServices(); // no-op if already enabled
+        googletag.display(divId);
       });
-      googletag.enableServices(); // no-op if already enabled
-      googletag.display(divId);
-    });
+    };
+    if (doc.body) mount();
+    else doc.addEventListener('DOMContentLoaded', mount);
     startEngine();
 
     /* --- controls --- */
